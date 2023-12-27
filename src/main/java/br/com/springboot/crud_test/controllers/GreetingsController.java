@@ -50,4 +50,12 @@ public class GreetingsController {
         return new ResponseEntity<String>("Sucess", HttpStatus.OK);
 
     }
+
+    @GetMapping(value = "searchbyid")
+    @ResponseBody
+    public ResponseEntity<UserClass> searchById (@RequestParam(name = "iduser") Long iduser) {
+        UserClass user = userRepository.findById(iduser).get();
+
+        return new ResponseEntity<UserClass>(user, HttpStatus.OK);
+    }
 }
