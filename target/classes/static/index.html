@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <title>CRUD</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+  <style type="text/css">
+    html {
+      margin-left: 5%;
+      margin-right: 5%;
+      margin-top: 5%;
+
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <h3>Spring boot rest api</h3>
+
+  <form action="" id="formUser">
+    <div class="mb-3">
+      <label for="id" class="form-label">ID</label>
+      <input type="text" class="form-control" id="id" readonly="readonly">
+    </div>
+
+    <div class="mb-3">
+      <label for="name" class="form-label">Name</label>
+      <input type="text" class="form-control" id="name" placeholder="Type the name" required="required">
+    </div>
+
+    <div class="mb-3">
+      <label for="age" class="form-label">Age</label>
+      <input type="number" class="form-control" id="age" placeholder="Type the age" required="required">
+    </div>
+  </form>
+
+  <button type="button" class="btn btn-primary" onclick="saveUser()">Save</button>
+  <button type="button" class="btn btn-secondary" onclick="document.getElementById('formUser').reset()">Clear</button>
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#searchUserModal">Search</button>
+  <button type="button" onclick="deleteFromView()" class="btn btn-danger">Delete</button>
+
+  <div class="modal fade" id="searchUserModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Search user</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group">
+              <label for="username" class="col-form-label">Name:</label>
+              <input type="text" class="form-control" id="username">
+            </div>
+
+            <button type="button" class="btn btn-success" onclick="searchUser()">Go</button>
+          </form>
+          <div style="margin-top: 300px;overflow: scroll;">
+            <table class="table" id="tableresults">
+              <thead>
+                <tr>
+                  <th scope="col">ID</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Age</th>
+                  <th scope="col">Edit</th>
+                  <th scope="col">Delete</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+    integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+
+
+  <script type="text/javascript">
+
+    function searchUser() {
+      var name = $('#username').val();
+
+      if (name != null && name.trim() != '') {
+        $.ajax({
+          method: "GET",
+          url: "searchbyname",
+          data: "name=" + name,
+          success: function (response) {
+            $('#tableresults > tbody > tr').remove();
+
+            console.log(response);
+
+            for (var i = 0; i < response.length; i++) {
+
+              $('#tableresults > tbody').append('<tr id = "' + response[i].id + '"><td>' + response[i].id + '</td><td>' + response[i].name + '</td><td>' + response[i].age + '</td><td><button type="button" onclick="editMode(' + response[i].id + ')" class="btn btn-primary">Edit</button></td><td><button type="button" onclick="deleteUser(' + response[i].id + ')" class="btn btn-danger">Delete</button></td></tr>');
+
+            }
+          }
+        }).fail(function (xhr, status, errorThrown) {
+          alert("Failed");
+        });
+      }
+    }
+
+    function deleteFromView() {
+
+      var id = $("#id").val();
+
+      if (id != null && id.trim() != '') {
+        deleteUser(id);
+        document.getElementById('formUser').reset();
+      }
+
+
+    }
+
+    function deleteUser(id) {
+
+      if (confirm("Are you sure?")) {
+
+        $.ajax({
+          method: "DELETE",
+          url: "delete",
+          data: "iduser=" + id,
+          success: function (response) {
+
+            $('#' + id).remove();
+
+            alert(response);
+          }
+        }).fail(function (xhr, status, errorThrown) {
+          alert("Failed");
+        });
+      }
+    }
+
+    function editMode(id) {
+
+      $.ajax({
+        method: "GET",
+        url: "searchbyid",
+        data: "iduser=" + id,
+        success: function (response) {
+
+          $("#id").val(response.id);
+          $("#name").val(response.name);
+          $("#age").val(response.age);
+
+          $('#searchUserModal').modal('hide');
+
+        }
+      }).fail(function (xhr, status, errorThrown) {
+        alert("Failed");
+      });
+    }
+
+    function saveUser() {
+      var id = $("#id").val();
+      var name = $("#name").val();
+      var age = $("#age").val();
+
+      if (name == null || name != null && name.trim() == '') {
+        $('#name').focus();
+        alert("Name is empty!");
+        return;
+      }
+
+      if (age == null || age!= null && age.trim() == '') {
+        $('#age').focus();
+        alert("Age is empty!");
+        return;
+      }
+
+        $.ajax({
+          method: "POST",
+          url: "createnew",
+          data: JSON.stringify({ id: id, name: name, age: age }),
+          contentType: "application/json; charset=utf-8",
+          success: function (response) {
+
+            $("#id").val(response.id);
+            alert("Sucess");
+
+          }
+        }).fail(function (xhr, status, errorThrown) {
+          alert("Failed");
+        });
+      
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+
+</body>
+
+</html>

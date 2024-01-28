@@ -1,0 +1,4 @@
+br\com\springboot\crud_test\Application.class
+br\com\springboot\crud_test\model\UserClass.class
+br\com\springboot\crud_test\repository\UserRepository.class
+br\com\springboot\crud_test\controllers\GreetingsController.class

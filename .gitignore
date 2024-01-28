@@ -33,7 +33,6 @@ interpolated*.xml
 lib/
 manifest.yml
 overridedb.*
-target
 transaction-logs
 .flattened-pom.xml
 secrets.yml
