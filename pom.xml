@@ -126,10 +126,11 @@
               <goal>repackage</goal>
             </goals>
           </execution>
-          <configuration>
-                <mainClass>com.seu.pacote.Application</mainClass>
-            </configuration>
+          
         </executions>
+        <configuration>
+                <mainClass>src\main\java\br\com\springboot\crud_test\Application.java</mainClass>
+            </configuration>
       </plugin>
     </plugins>
   </build>
