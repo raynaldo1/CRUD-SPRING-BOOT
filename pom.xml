@@ -129,7 +129,7 @@
           
         </executions>
         <configuration>
-                <mainClass>src\main\java\br\com\springboot\crud_test\Application.java</mainClass>
+                <mainClass>src\main\java\br\com\springboot\crud_test\Application</mainClass>
             </configuration>
       </plugin>
     </plugins>
