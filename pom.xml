@@ -126,6 +126,9 @@
               <goal>repackage</goal>
             </goals>
           </execution>
+          <configuration>
+                <mainClass>com.seu.pacote.Application</mainClass>
+            </configuration>
         </executions>
       </plugin>
     </plugins>
